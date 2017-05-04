@@ -61,12 +61,16 @@ SElemType EvaluateExpression()
 	c=getchar();
 	while(c!='#' ||'#'!=GetTop(OPTR)&&GetTop(OPTR)!=-1)
 	{
-		printf("现在字符栈顶为%c\n",GetTop(OPTR));
+//		printf("现在字符栈顶为%c\n",GetTop(OPTR));
 		if(!In(c))
 		{
 			//当c不在OP中时，说明c为数值，将c入数栈 
+			if(c!=64&&c!='\n')
+			{ 
+			//如果是空格或回车，自动跳过 
 			Push(&OPND,c-48);//c为字符变量，c-48为它本身int的值 
-			printf("进栈的数为%c\n",c); 
+//			printf("进栈的数为%c\n",c); 
+			}
 			c=getchar();
 		}
 		else
@@ -75,7 +79,7 @@ SElemType EvaluateExpression()
 			{
 				case '<' ://栈顶优先权低，运算符进栈
 					Push(&OPTR,c);
-					printf("现在字符%c入栈\n",c);
+//					printf("现在字符%c入栈\n",c);
 					c=getchar();//继续读取下一个 
 				break;
 				case '>' ://栈顶优先权高，运算数出两个，运算符出一个进行运算 
@@ -83,7 +87,7 @@ SElemType EvaluateExpression()
 					Pop(&OPND,&num1);
 					Pop(&OPTR,&theta);
 					Push(&OPND,Operate(num1,theta,num2));
-					printf("出栈数为%d  %c %d=%d \n",num1,theta,num2,GetTop(OPND));				 
+//					printf("出栈数为%d  %c %d=%d \n",num1,theta,num2,GetTop(OPND));				 
 				break;
 				case '=' ://   '('与')'比较时 ,这时要去括号 
 				c=getchar();
