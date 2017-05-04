@@ -104,8 +104,8 @@ void RPN()
 //		printf("现在字符栈顶为%c\n",GetTop(OPTR));
 		if(!In(c))
 		{
-			if(c!=64&&c!='\n')
-				result[index++]=c; //如果是空格或回车，自动跳过 
+			if(c!=32&&c!='\n')
+				result[index++]=c; //如果是空格(ASCII码为32)或回车，自动跳过 
 			c=getchar();
 		}
 		else
