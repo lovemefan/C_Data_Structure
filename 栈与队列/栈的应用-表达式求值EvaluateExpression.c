@@ -65,9 +65,9 @@ SElemType EvaluateExpression()
 		if(!In(c))
 		{
 			//当c不在OP中时，说明c为数值，将c入数栈 
-			if(c!=64&&c!='\n')
+			if(c!=32&&c!='\n')
 			{ 
-			//如果是空格或回车，自动跳过 
+			//如果是空格(ASCII为32)或回车，自动跳过 
 			Push(&OPND,c-48);//c为字符变量，c-48为它本身int的值 
 //			printf("进栈的数为%c\n",c); 
 			}
