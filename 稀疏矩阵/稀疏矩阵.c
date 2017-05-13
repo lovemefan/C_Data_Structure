@@ -27,7 +27,7 @@ typedef struct
 Status InitData(TSMatrix *data,int m,int n)
 {
 // 初始化一个矩阵 
-	data->mu=m 
+	data->mu=m  ;
 	
 }
 Status CreateSMatrix(TSMatrix *M)
@@ -50,6 +50,24 @@ Status CopySMatrix(TSMatrix M,TSMatrix *N)
 Status AddSMatrix(TSMatrix M,TSMatrix N,TSMatrix *Q) 
 {
 //	初始条件  稀疏矩阵已存在  。求稀疏矩阵M，N的和 Q=M+N
+	int  pa=1,pb=1,pc=1; 
+	int row; 
+	if(!M || !N) return ERROR;
+	if(M.mu!=N.mu && M.nu!=N.nu) return ERROR;//M,N不一致，无法相加 
+	*Q->mu=M.mu;
+	*Q->nu=M.nu;
+	*Q->tu=0;
+	for(row=1;row<=M.mu;row++)
+	{
+		while(M.Data[pa].i<row && pa<M.tu) 
+			pa++; //依次扫描M 
+			
+		while(M.Data[pb].i<row && pb<N.tu) 
+			pb++; //依次扫描N
+		
+		while() 
+		
+	} 
 
  
 }
@@ -86,7 +104,7 @@ Status TransposeSMatrix(TSMatrix M,TSMatrix *T)
 					
 			} 
 			
-		}	11	
+		}	
  	return OK; 
 } 
 Status InverseSMatrix(TSMatrix M,TSMatrix *T)
