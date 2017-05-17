@@ -67,10 +67,23 @@ Status DeQueue(LinkQueue *Q,BiTNode *e)
 	free(p);
 	return OK;
 }
+Status QueueTraverse(LinkQueue Q)
+{
+	QueuePtr p;
+	p=Q.front->next;
+	while(p)
+	{
+		 printf("%c ",p->elem.data);
+		 p=p->next;
+	}
+	printf("\n");
+	return OK;
+}
 //---------------------------------------二叉树操作--------------------------------------------------------
 Status CreateBiTree(BiTree *T)
 {
-	//按顺序输入二叉树中结点的值 ，空格表示空树，构造二叉链表表示的二叉树T 
+	//按顺序输入二叉树中结点的值 ，空格表示空树，先序构造二叉链表表示的二叉树T 
+	//先序，中序，后序，建树没有很大区别，同样以先序输入，只是搭建树的顺序不同 
 	char c;
 	do
 	{
@@ -88,6 +101,58 @@ Status CreateBiTree(BiTree *T)
 			(*T)->data=c;
 			if(CreateBiTree(&(*T)->lchild));
 			if(CreateBiTree(&(*T)->rchild));
+		} 
+	}
+	return OK;
+}
+Status InOrderCreateBiTree(BiTree *T)
+{
+	//按顺序输入二叉树中结点的值 ，空格表示空树，中序构造二叉链表表示的二叉树T 
+	//先序，中序，后序，建树没有很大区别，同样以先序输入，只是搭建树的顺序不同 
+	char c;
+	do
+	{
+		c=getchar();
+	}
+	while(c==32 || c=='\n');//跳过空格或回车 
+	if(c=='#')
+		(*T)=NULL;
+	else
+	{
+		if(!((*T)=(BiTree)malloc(sizeof(BiTNode))))
+			return ERROR;//内存不足 
+		else
+		{
+			
+			if(CreateBiTree(&(*T)->lchild));
+			(*T)->data=c;
+			if(CreateBiTree(&(*T)->rchild));
+		} 
+	}
+	return OK;
+}
+Status PostCreateBiTree(BiTree *T)
+{
+	//按顺序输入二叉树中结点的值 ，空格表示空树，后序构造二叉链表表示的二叉树T 
+	//先序，中序，后序，建树没有很大区别，同样以先序输入，只是搭建树的顺序不同 
+	char c;
+	do
+	{
+		c=getchar();
+	}
+	while(c==32 || c=='\n');//跳过空格或回车 
+	if(c=='#')
+		(*T)=NULL;
+	else
+	{
+		if(!((*T)=(BiTree)malloc(sizeof(BiTNode))))
+			return ERROR;//内存不足 
+		else
+		{
+			
+			if(CreateBiTree(&(*T)->lchild));
+			if(CreateBiTree(&(*T)->rchild));
+			(*T)->data=c;
 		} 
 	}
 	return OK;
@@ -180,16 +245,18 @@ Status LevelOrderTraverse(BiTree T,Status(*Visit)(TElemType))
 			printf("%c ",p.data);
 			if(p.lchild!=NULL)
 			{
+				printf("---a-- "); 
 				EnQueue(&LQ,*(p.lchild));
 				printf("%c进队列 ",(p.lchild)->data);
 			}
 				
 			if(p.lchild!=NULL)
 			{
+				printf("---b-- "); 
 				EnQueue(&LQ,*(p.rchild));
 				printf("%c进队列 ",(p.rchild)->data);
 			}
-				
+			QueueTraverse(LQ);	
 		}
 		
 	} 
@@ -287,6 +354,53 @@ int AllNodeNum(BiTree T)
 		return 1+n1+n2;
 	}
 }
+Status ExchangeTree(BiTree *T)
+{
+	//交换左右子树和左右节点，使得交换后的树与原树镜像对称 
+	BiTree temp;
+		if(*T)
+		{
+			temp=(*T)->lchild;
+			(*T)->lchild=(*T)->rchild;
+			(*T)->rchild=temp;
+			
+		
+			ExchangeTree(&(*T)->lchild);
+			ExchangeTree(&(*T)->rchild);
+			return OK;
+		}
+		else
+			return ERROR;	
+} 
+Status EqualTree(BiTree M,BiTree N)
+{
+//	判断M,N两棵树是否相同 
+	if(M&&N)
+	{
+		if(M->data==N->data)
+		{
+			if(EqualTree(M->lchild,N->lchild))
+			{
+				if(EqualTree(M->rchild,N->rchild))
+					return OK;
+				else
+					return ERROR;//右子树不同 
+			}
+			else	
+				return ERROR;//左子树不同 
+		}
+		else
+			return ERROR;//节点不同 
+	} 
+	else
+	{
+		if(M==NULL&&N==NULL)
+			return OK;//都为空则相同 
+		else 
+			return ERROR;//头结点至少有一个为空 
+	} 
+		
+}
 int main()
 {
 	BiTree T;
@@ -303,9 +417,6 @@ int main()
 	printf("\n后序遍历");
 	PostOrderTraverse(T,Visit);
 	
-	EnQueue(&LQ,*T);	
-
-	DeQueue(&LQ,&p);
 
 	printf("\n层序遍历");
 	LevelOrderTraverse(T,Visit);
@@ -325,5 +436,14 @@ int main()
 	n=TreeDepth(T);
 	printf("树的深度 %d \n",n);
 	
+	printf("交换后的结果"); 
+	if(!ExchangeTree(&T))
+		printf("交换失败");
+	printf("\n先序遍历");
+	PreOrderTraverse(T,Visit); 
+	printf("\n中序遍历");
+	InOrderTraverse(T,Visit);
+	printf("\n后序遍历");
+	PostOrderTraverse(T,Visit);
 	return 0;
 }
