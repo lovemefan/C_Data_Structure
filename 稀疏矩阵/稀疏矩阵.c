@@ -51,24 +51,80 @@ Status AddSMatrix(TSMatrix M,TSMatrix N,TSMatrix *Q)
 {
 //	初始条件  稀疏矩阵已存在  。求稀疏矩阵M，N的和 Q=M+N
 	int  pa=1,pb=1,pc=1; 
-	int row; 
-	if(!M || !N) return ERROR;
+	int row,ce; 
 	if(M.mu!=N.mu && M.nu!=N.nu) return ERROR;//M,N不一致，无法相加 
-	*Q->mu=M.mu;
-	*Q->nu=M.nu;
-	*Q->tu=0;
+	Q->mu=M.mu;
+	Q->nu=M.nu;
+	Q->tu=0;
 	for(row=1;row<=M.mu;row++)
 	{
 		while(M.Data[pa].i<row && pa<M.tu) 
 			pa++; //依次扫描M 
 			
-		while(M.Data[pb].i<row && pb<N.tu) 
+		while(N.Data[pb].i<row && pb<N.tu) 
 			pb++; //依次扫描N
 		
-		while() 
+		while(M.Data[pa].i==row && N.Data[pb].i==row && pa<=M.tu && pb<=N.tu) 
+		{
+			if(M.Data[pa].j=N.Data[pb].j)
+			{
+				ce=M.Data[pa].e+N.Data[pb].e;
+				if(ce)
+				{
+					Q->Data[pc].i=row;
+					Q->Data[pc].j=M.Data[pa].j;
+					Q->Data[pc].e=ce;
+					pa++;
+					pb++;
+					pc++;
+					
+				}
+			}
+			else
+			{
+				if(M.Data[pa].j>N.Data[pb].j)
+				{
+					Q->Data[pc].i=row;
+					Q->Data[pc].j=N.Data[pb].j;
+					Q->Data[pc].e=N.Data[pb].e;
+					pb++;
+					pc++;
+				}
+				else
+				{
+					Q->Data[pc].i=row;
+					Q->Data[pc].j=M.Data[pa].j;
+					Q->Data[pc].e=M.Data[pa].e;
+					pa++;
+					pc++;
+					
+				}
+			}
+//				printf("&&&&&&&&&");
+		}
 		
+//		将剩下的复制到Q中 
+		while(M.Data[pa].i==row && pa<=M.tu)
+		{
+			Q->Data[pc].i=row;
+			Q->Data[pc].j=M.Data[pa].j;
+			Q->Data[pc].e=M.Data[pa].e;
+			pa++;
+			pc++;
+		}
+		while(N.Data[pb].i==row && pb<=N.tu)
+		{
+			Q->Data[pc].i=row;
+			Q->Data[pc].j=N.Data[pb].j;
+			Q->Data[pc].e=N.Data[pb].e;
+			pb++;
+			pc++;
+		}
+		
+			printf("________  ");
 	} 
 
+	Q->tu=pc-1;
  
 }
 Status SubtMatrix(TSMatrix M,TSMatrix N,TSMatrix *Q) 
@@ -112,8 +168,70 @@ Status InverseSMatrix(TSMatrix M,TSMatrix *T)
 //	初始条件  稀疏矩阵已存在 。求矩阵的逆矩阵 
  
 } 
+Status MatrixToSMatrix(int M[6][6],int c,int r,TSMatrix *SM)
+{
+	//
+	int i,j;
+	int k=1;//零号元素不存 
+//	printf("%d",*(*(M+1)+1));
+	if(!SM) return ERROR;
+	if(c<0||r<0) return ERROR;
+	for(i=0;i<c;i++)
+		for(j=0;j<r;j++)
+		{
+			if(M[i][j])
+			{
+				SM->Data[k].i=i+1;
+				SM->Data[k].j=j+1;
+				SM->Data[k++].e=M[i][j];
+			}
+				
+		}
+	SM->mu=c;
+	SM->nu=r;
+	SM->tu=k-1;
+	return OK;
+
+}
+void SMarixTraverse(TSMatrix M)
+{
+	int i;
+	for(i=1;i<=M.tu;i++)
+	{
+		printf("(%d,%d,%d) ",M.Data[i].i,M.Data[i].j,M.Data[i].e);
+	}
+	printf("\n");
+}
 int main()
 {
-	
+	TSMatrix SM,SQ,Q;
+	int a[6][6]={
+		{0,0,1,0,0,0},
+		{0,0,0,0,8,0},
+		{4,0,1,0,0,0},
+		{0,3,2,0,0,0},
+		{0,0,0,0,0,0},
+		{0,0,0,0,6,0}
+		
+	}; 
+	int b[6][6]={
+		{0,0,0,0,5,0},
+		{0,0,0,0,8,0},
+		{6,0,-1,0,0,0},
+		{0,3,2,0,0,0},
+		{0,0,0,8,0,0},
+		{0,0,2,0,6,0}
+		
+	}; 
+	InitData(&SM,6,6);
+	InitData(&SQ,6,6);
+	MatrixToSMatrix(a,6,6,&SM);
+	MatrixToSMatrix(b,6,6,&SQ);
+	SMarixTraverse(SM);
+	SMarixTraverse(SQ);
+	AddSMatrix(SM,SQ,&Q);
+
+	SMarixTraverse(Q);
 	return 0;
 }
+
