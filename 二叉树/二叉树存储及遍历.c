@@ -5,6 +5,7 @@
 #define TRUE 1
 #define FALSE 0
 #define OVERFLOW -1
+#define MAXSIZE 20 
 typedef int Status;
 typedef char TElemType;
 //----------------------------------二叉树的二叉链表储存 -------------------------------------- 
@@ -13,72 +14,58 @@ typedef struct Node{
 	struct Node *lchild,*rchild;//左右孩子指针 
 }BiTNode,*BiTree;
 //----------------------------------队列链表储存结构----------------------------------------- 
-typedef struct qnode	/* 队列结点结构 */
+// ****************************  
+
+// 用到的队列结构与函数**********************************  
+// 循环队列的顺序存储结构  
+typedef struct
 {
-   BiTNode elem;
-   struct qnode *next;
-}QNode,*QueuePtr;
+	BiTNode data[MAXSIZE];
+	int front;    	// 头指针  
+	int rear;		// 尾指针,若队列不空,指向队列尾元素的下一个位置  
+}Queue;
 
-typedef struct			/* 队列的链表结构 */
+// 初始化一个空队列Q  
+Status InitQueue(Queue *Q)
 {
-   QueuePtr front,rear; /* 队头、队尾指针 */
-}LinkQueue;
-
-
-//---------------------------------------队列操作函数------------------------------------------
-Status InitQueue(LinkQueue *Q)
-{ 
-	Q->front=Q->rear=(QueuePtr)malloc(sizeof(QNode));
-	if(!Q->front)
-		exit(OVERFLOW);
-	Q->front->next=NULL;
-	return OK;
+	Q->front=0;
+	Q->rear=0;
+	return  OK;
 }
-Status QueueEmpty(LinkQueue Q)
+
+// 若队列Q为空队列,则返回TRUE,否则返回FALSE  
+Status QueueEmpty(Queue Q)
 { 
-	if(Q.front==Q.rear)
+	if(Q.front==Q.rear) // 队列空的标志  
 		return TRUE;
 	else
 		return FALSE;
 }
-Status EnQueue(LinkQueue *Q,BiTNode e)
-{ 
-	QueuePtr s=(QueuePtr)malloc(sizeof(QNode));
-	if(!s) /* 存储分配失败 */
-		exit(OVERFLOW);
-	s->elem=e;
-	s->next=NULL;
-	Q->rear->next=s;	/* 把拥有元素e的新结点s赋值给原队尾结点的后继，见图中① */
-	Q->rear=s;		/* 把当前的s设置为队尾结点，rear指向s，见图中② */
-	return OK;
+
+// 若队列未满,则插入元素e为Q新的队尾元素  
+Status EnQueue(Queue *Q,BiTNode e)
+{
+	if ((Q->rear+1)%MAXSIZE == Q->front)	// 队列满的判断  
+		return ERROR;
+	Q->data[Q->rear]=e;			// 将元素e赋值给队尾  
+	Q->rear=(Q->rear+1)%MAXSIZE;// rear指针向后移一位置,  
+								// 若到最后则转到数组头部  
+	return  OK;
 }
 
-/* 若队列不空,删除Q的队头元素,用e返回其值,并返回OK,否则返回ERROR */
-Status DeQueue(LinkQueue *Q,BiTNode *e)
+// 若队列不空,则删除Q中队头元素,用e返回其值  
+Status DeQueue(Queue *Q,BiTNode *e)
 {
-	QueuePtr p;
-	if(Q->front==Q->rear)
+	if (Q->front == Q->rear)			// 队列空的判断  
 		return ERROR;
-	p=Q->front->next;		/* 将欲删除的队头结点暂存给p，见图中① */
-	*e=(p->elem);				/* 将欲删除的队头结点的值赋值给e */
-	Q->front->next=p->next;/* 将原队头结点的后继p->next赋值给头结点后继，见图中② */
-	if(Q->rear==p)		/* 若队头就是队尾，则删除后将rear指向头结点，见图中③ */
-		Q->rear=Q->front;
-	free(p);
-	return OK;
+	*e=Q->data[Q->front];				// 将队头元素赋值给e  
+	Q->front=(Q->front+1)%MAXSIZE;	// front指针向后移一位置,  
+									// 若到最后则转到数组头部  
+	return  OK;
 }
-Status QueueTraverse(LinkQueue Q)
-{
-	QueuePtr p;
-	p=Q.front->next;
-	while(p)
-	{
-		 printf("%c ",p->elem.data);
-		 p=p->next;
-	}
-	printf("\n");
-	return OK;
-}
+// ******************************************************  
+
+
 //---------------------------------------二叉树操作--------------------------------------------------------
 Status CreateBiTree(BiTree *T)
 {
@@ -231,32 +218,27 @@ Status LevelOrderTraverse(BiTree T,Status(*Visit)(TElemType))
 	//	若二叉树为空，则空操作；否则
 	//	1） 从上到下
 	//	2） 同一层，从左到右依次遍历
-	LinkQueue LQ;
+	Queue LQ;
 	InitQueue(&LQ);
 	BiTNode p;//接收出队列的结点
 	if(T)
 	{
 		EnQueue(&LQ,*T);
-//		printf("%c",LQ.front->data->data);	
 		while(!QueueEmpty(LQ))
 		{
 			DeQueue(&LQ,&p);
-	
+	 
 			printf("%c ",p.data);
-			if(p.lchild!=NULL)
+			if(p.lchild)
 			{
-				printf("---a-- "); 
 				EnQueue(&LQ,*(p.lchild));
-				printf("%c进队列 ",(p.lchild)->data);
 			}
 				
-			if(p.lchild!=NULL)
+			if(p.rchild)
 			{
-				printf("---b-- "); 
 				EnQueue(&LQ,*(p.rchild));
-				printf("%c进队列 ",(p.rchild)->data);
 			}
-			QueueTraverse(LQ);	
+
 		}
 		
 	} 
@@ -406,7 +388,7 @@ int main()
 	BiTree T;
 	int n;
 	BiTNode p;
-	LinkQueue LQ;
+	Queue LQ;
 	InitQueue(&LQ);
 	printf("先序输入树，以空以#结束\n");
 	CreateBiTree(&T);
