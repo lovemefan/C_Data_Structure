@@ -73,7 +73,7 @@ int main()
 	TraverseList(sl);
 	
 	timePast=clock();
-	printf("\n插入排序后\n");
+	printf("\n快速排序后\n");
 	QuickSort(&sl,1,1000);
 	timeNow=clock();
 	TraverseList(sl);
