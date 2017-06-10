@@ -28,28 +28,31 @@ void TraverseList(SqList L)
 	printf("%d",L.r[i]);
 	printf("\n");
 }
- 
-void InsertSort(SqList *L)
-{ 
-	int i,j;
-	for(i=2;i<=L->length;i++)
+void ArraySort(SqList *L,int range)
+{
+// 利用数组来实现排序，前提条件是已知数组元素的范围
+	int i,j,k=1,array[range+1];
+	for(i=1;i<=range;i++)
+		array[i]=0;//现将此数组初始化为零
+	for(i=1;i<=L->length;i++)
+		array[L->r[i]]++;//利用数组的下标插入到array中，完成排序
+	
+	for(i=1;i<=range;i++)
 	{
-		if (L->r[i]<L->r[i-1]) /* 需将L->r[i]插入有序子表 */
+		if(array[i])//array[i]表示i有array[i]个 
 		{
-			L->r[0]=L->r[i]; /* 设置哨兵 */
-			for(j=i-1;L->r[j]>L->r[0];j--)
-				L->r[j+1]=L->r[j]; /* 记录后移 */
-			L->r[j+1]=L->r[0]; /* 插入到正确位置 */
-		}
-	}
-}
-
+			 for(j=0;j<array[i];j++)
+			 	L->r[k++]=i;
+		} 
+	} 
+	
+} 
 int main()
 {
 	SqList sl;
 	clock_t timePast;
 	clock_t timeNow;
-	int i;
+	int i,dlta[10]={29,23,19,17,13,11,7,5,3,1};
 	sl.length=1000;
 	
 	
@@ -60,11 +63,12 @@ int main()
 	TraverseList(sl);
 	
 	timePast=clock();
-	printf("\n插入排序后\n");
-	InsertSort(&sl);
+	printf("\n堆排序后\n");
+
+	ArraySort(&sl,1000);
 	timeNow=clock();
 	TraverseList(sl);
-	printf("插入排序用时%f秒",(timeNow-timePast)/(CLOCKS_PER_SEC*1.0));
+	printf("堆排序用时%f秒",(timeNow-timePast)/(CLOCKS_PER_SEC*1.0));
 	
 	
 } 
