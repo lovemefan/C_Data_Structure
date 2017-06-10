@@ -31,15 +31,14 @@ void TraverseList(SqList L)
  
 int Partition(SqList *L,int low,int high)
 { 
-	int pivotkey;
 
-	pivotkey=L->r[low]; // 用子表的第一个记录作枢轴记录  
+	L->r[0]=L->r[low]; // 用子表的第一个记录作枢轴记录  
 	while(low<high) //  从表的两端交替地向中间扫描  
 	{ 
-		 while(low<high&&L->r[high]>=pivotkey)
+		 while(low<high&&L->r[high]>=L->r[0])
 			high--;
 		 swap(L,low,high);// 将比枢轴记录小的记录交换到低端  
-		 while(low<high&&L->r[low]<=pivotkey)
+		 while(low<high&&L->r[low]<=L->r[0])
 			low++;
 		 swap(L,low,high);// 将比枢轴记录大的记录交换到高端  
 	}
@@ -47,15 +46,19 @@ int Partition(SqList *L,int low,int high)
 }
 
 // 对顺序表L中的子序列L->r[low..high]作快速排序  
-void QuickSort(SqList *L,int low,int high)
+void QSort(SqList *L,int low,int high)
 { 
 	int pivot;
 	if(low<high)
 	{
 			pivot=Partition(L,low,high); //  将L->r[low..high]一分为二，算出枢轴值pivot  
-			QuickSort(L,low,pivot-1);		//  对低子表递归排序  
-			QuickSort(L,pivot+1,high);		//  对高子表递归排序  
+			QSort(L,low,pivot-1);		//  对低子表递归排序  
+			QSort(L,pivot+1,high);		//  对高子表递归排序  
 	}
+}
+void QuickSort(SqList *L)
+{ 
+	QSort(L,1,L->length);
 }
 int main()
 {
@@ -74,7 +77,7 @@ int main()
 	
 	timePast=clock();
 	printf("\n快速排序后\n");
-	QuickSort(&sl,1,1000);
+	QuickSort(&sl);
 	timeNow=clock();
 	TraverseList(sl);
 	printf("插入排序用时%f秒",(timeNow-timePast)/(CLOCKS_PER_SEC*1.0));

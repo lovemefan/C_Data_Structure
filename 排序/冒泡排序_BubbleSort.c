@@ -29,19 +29,54 @@ void TraverseList(SqList L)
 	printf("\n");
 }
 // 对顺序表L作简单选择排序 */
-void SelectSort(SqList *L)
-{
-	int i,j,min;
+/* 对顺序表L作交换排序（冒泡排序初级版） */
+void BubbleSort0(SqList *L)
+{ 
+	int i,j;
 	for(i=1;i<L->length;i++)
-	{ 
-		min = i;						// 将当前下标定义为最小值下标 */
-		for (j = i+1;j<=L->length;j++)// 循环之后的数据 */
-        {
-			if (L->r[min]>L->r[j])	// 如果有小于当前最小值的关键字 */
-                min = j;				// 将此关键字的下标赋值给min */
-        }
-		if(i!=min)						// 若min不等于i，说明找到最小值，交换 */
-			swap(L,i,min);				// 交换L->r[i]与L->r[min]的值 */
+	{
+		for(j=i+1;j<=L->length;j++)
+		{
+			if(L->r[i]>L->r[j])
+			{
+				 swap(L,i,j);/* 交换L->r[i]与L->r[j]的值 */
+			}
+		}
+	}
+}
+
+/* 对顺序表L作冒泡排序 */
+void BubbleSort(SqList *L)
+{ 
+	int i,j;
+	for(i=1;i<L->length;i++)
+	{
+		for(j=L->length-1;j>=i;j--)  /* 注意j是从后往前循环 */
+		{
+			if(L->r[j]>L->r[j+1]) /* 若前者大于后者（注意这里与上一算法的差异）*/
+			{
+				 swap(L,j,j+1);/* 交换L->r[j]与L->r[j+1]的值 */
+			}
+		}
+	}
+}
+
+/* 对顺序表L作改进冒泡算法 */
+void BubbleSort2(SqList *L)
+{ 
+	int i,j;
+	Status flag=TRUE;			/* flag用来作为标记 */
+	for(i=1;i<L->length && flag;i++) /* 若flag为true说明有过数据交换，否则停止循环 */
+	{
+		flag=FALSE;				/* 初始为False */
+		for(j=L->length-1;j>=i;j--)
+		{
+			if(L->r[j]>L->r[j+1])
+			{
+				 swap(L,j,j+1);	/* 交换L->r[j]与L->r[j+1]的值 */
+				 flag=TRUE;		/* 如果有数据交换，则flag为true */
+			}
+		}
 	}
 }
 int main()
@@ -60,11 +95,11 @@ int main()
 	TraverseList(sl);
 	
 	timePast=clock();
-	printf("\n选择排序后\n");
-	SelectSort(&sl);
+	printf("\n冒泡排序后\n");
+	BubbleSort(&sl);
 	timeNow=clock();
 	TraverseList(sl);
-	printf("普通排序用时%f秒",(timeNow-timePast)/(CLOCKS_PER_SEC*1.0));
+	printf("冒泡排序用时%f秒",(timeNow-timePast)/(CLOCKS_PER_SEC*1.0));
 	
 	
 } 
