@@ -215,6 +215,50 @@ void ArraySort(SqList *L,int range)
 	} 
 	
 } 
+void Merge(int SR[],int TR[],int i,int m,int n)
+{
+	int j,k,l;
+	for(j=m+1,k=i;i<=m && j<=n;k++)	// 将SR中记录由小到大地并入TR  
+	{
+		if (SR[i]<SR[j])
+			TR[k]=SR[i++];
+		else
+			TR[k]=SR[j++];
+	}
+	if(i<=m)
+	{
+		for(l=0;l<=m-i;l++)
+			TR[k+l]=SR[i+l];		// 将剩余的SR[i..m]复制到TR  
+	}
+	if(j<=n)
+	{
+		for(l=0;l<=n-j;l++)
+			TR[k+l]=SR[j+l];		// 将剩余的SR[j..n]复制到TR  
+	}
+}
+
+
+// 递归法  
+// 将SR[s..t]归并排序为TR1[s..t]  
+void MSort(int SR[],int TR1[],int s, int t)
+{
+//	SR为输入进来将要排序的数组，TR1为排好序接收的数组 
+	int m;
+	int TR2[MAXSIZE+1];
+	if(s==t)
+		TR1[s]=SR[s];
+	else
+	{
+		m=(s+t)/2;				// 将SR[s..t]平分为SR[s..m]和SR[m+1..t]  
+		MSort(SR,TR2,s,m);		// 递归地将SR[s..m]归并为有序的TR2[s..m]  
+		MSort(SR,TR2,m+1,t);	// 递归地将SR[m+1..t]归并为有序的TR2[m+1..t]  
+		Merge(TR2,TR1,s,m,t);	// 将TR2[s..m]和TR2[m+1..t]归并到TR1[s..t]  
+	}
+}
+void MergeSort(SqList *L)
+{ 
+ 	MSort(L->r,L->r,1,L->length);
+}
 int main()
 {
 	SqList sl;
@@ -225,14 +269,16 @@ int main()
 
 	sl.length=10000;
 	
-	SortStructure S[7];
+	SortStructure S[9];
 	InitSortStructure(&S[0],"冒泡排序"); 
 	InitSortStructure(&S[1],"选择排序"); 
 	InitSortStructure(&S[2],"插入排序"); 
-	InitSortStructure(&S[3],"快速排序"); 
-	InitSortStructure(&S[4],"堆排序"); 
-	InitSortStructure(&S[5],"希尔排序"); 
-	InitSortStructure(&S[6],"数组排序"); 
+	InitSortStructure(&S[3],"归并排序");
+	InitSortStructure(&S[4],"快速排序"); 
+	InitSortStructure(&S[5],"堆排序"); 
+	InitSortStructure(&S[6],"希尔排序"); 
+	InitSortStructure(&S[7],"基数排序"); 
+	InitSortStructure(&S[8],"数组排序"); 
 	printf("\n为了演示效果此程序将用各种排序方式排序100组10000个元素的随机数组\n并且取其平均比较次数和平均时间来对比\n"); 
 	printf("请耐心等待，大概要一分钟....\n\n");
 	for(i=0;i<NUM;i++)
@@ -240,7 +286,7 @@ int main()
 //		完成100次排序 
 		for(j=1;j<=sl.length;j++)
 			sl.r[j]=rand()%10000;
-		for(j=0;j<7;j++)
+		for(j=0;j<9;j++)
 		{
 			InitSortStructureSqlist(&S[j],sl);//设置每次的随机数组 
 		}
@@ -262,27 +308,32 @@ int main()
 		S[2].times[i]=(timeNow-timePast);
 		
 		timePast=clock();
-		QuickSort(&S[3].L);
+		MergeSort(&S[3].L);
 		timeNow=clock();
 		S[3].times[i]=(timeNow-timePast);
 		
 		timePast=clock();
-		HeapSort(&S[4].L);
+		QuickSort(&S[4].L);
 		timeNow=clock();
 		S[4].times[i]=(timeNow-timePast);
-		
-		timePast=clock();	
-		ShellSort(&S[5].L,dlta,14);
+			
+		timePast=clock();
+		HeapSort(&S[5].L);
 		timeNow=clock();
 		S[5].times[i]=(timeNow-timePast);
 		
 		timePast=clock();	
-		ArraySort(&S[6].L,10000);
+		ShellSort(&S[6].L,dlta,14);
 		timeNow=clock();
 		S[6].times[i]=(timeNow-timePast);
 		
+		timePast=clock();	
+		ArraySort(&S[8].L,10000);
+		timeNow=clock();
+		S[8].times[i]=(timeNow-timePast);
+		
 	}
-	for(i=0;i<7;i++) 
+	for(i=0;i<9;i++) 
 	{
 					
 		temp=0;
@@ -295,7 +346,7 @@ int main()
 		S[i].averagetime=temp/(CLOCKS_PER_SEC*1.0);
 	}
 	
-	for(i=0;i<7;i++) 
+	for(i=0;i<9;i++) 
 	{
 		printf("%-10s ",S[i].inf);
 		printf(" 平均时间%f秒\n",S[i].averagetime);
