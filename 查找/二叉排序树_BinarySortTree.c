@@ -110,19 +110,98 @@ Status DeleteBST(BiTree *T,int key)
 		 
 	}
 }
-
+Status Visit(ElemType elem)
+{
+	printf("%d ",elem);
+	return OK;
+}
+Status PreOrderTraverse(BiTree T,Status(*Visit)(TElemType))
+{
+	//采用二叉链表储存结构，Visit 是对结点操作的函数
+	//先序遍历二叉树T，对每个结点调用函数Visit有且只有一次 
+	//一旦Visit失败，则操作失败	
+	//	先序遍历二叉树的操作定义：
+	//	若二叉树为空，则空操作；否则n  
+	//	1） 访问根结点
+	//	2） 先序遍历左子树
+	//	3） 先序遍历右子树
+	if(T)
+	{
+		if(Visit(T->data))
+			if(PreOrderTraverse(T->lchild,Visit));
+				if(PreOrderTraverse(T->rchild,Visit));
+		return OK;
+	}
+	else
+		return ERROR;
+}
+Status InOrderTraverse(BiTree T,Status(*Visit)(TElemType))
+{
+	//采用二叉链表储存结构，Visit 是对结点操作的函数
+	//中遍历二叉树*T，对每个结点调用函数Visit有且只有一次 
+	//一旦Visit失败，则操作失败	
+	//中序遍历二叉树的操作定义：
+	//	若二叉树为空，则空操作；否则
+	//	1） 中序遍历左子树
+	//	2） 访问根结点
+	//	3） 中序遍历右子树
+	if(T)
+	{
+		if(InOrderTraverse(T->lchild,Visit));
+			if(Visit(T->data))
+				if(InOrderTraverse(T->rchild,Visit));
+		return OK;
+	}
+	else
+		return ERROR;
+}
+Status CreateBiTree(BiTree *T)
+{
+	//按顺序输入二叉树中结点的值 ，空格表示空树，先序构造二叉链表表示的二叉树T 
+	//先序，中序，后序，建树没有很大区别，同样以先序输入，只是搭建树的顺序不同 
+	char c;
+	do
+	{
+		c=getchar();
+	}
+	while(c==32 || c=='\n');//跳过空格或回车 
+	if(c=='#')
+		(*T)=NULL;
+	else
+	{
+		if(!((*T)=(BiTree)malloc(sizeof(BiTNode))))
+			return ERROR;//内存不足 
+		else
+		{
+			(*T)->data=c-48;
+			if(CreateBiTree(&(*T)->lchild));
+			if(CreateBiTree(&(*T)->rchild));
+		} 
+	}
+	return OK;
+}
 int main(void)
 {    
 	int i;
 	int a[10]={62,88,58,47,35,73,51,99,37,93};
 	BiTree T=NULL;
 	
-	for(i=0;i<10;i++)
-	{
-		InsertBST(&T, a[i]);
-	}
-	DeleteBST(&T,93);
-	DeleteBST(&T,47);
-
+	CreateBiTree(&T);
+//	for(i=0;i<10;i++)
+//	{
+//		InsertBST(&T, a[i]);
+//	}
+	printf("先序\n");
+	PreOrderTraverse(T,Visit);
+	printf("\n中序\n");
+	InOrderTraverse(T,Visit);
+	DeleteBST(&T,3);
+//	DeleteBST(&T,35);
+	
+	printf("\n删除后\n先序\n");
+	PreOrderTraverse(T,Visit);
+	printf("\n中序\n");
+	InOrderTraverse(T,Visit);
+	
 	return 0;
 }

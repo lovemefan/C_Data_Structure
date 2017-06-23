@@ -4,7 +4,7 @@
 #define ERROR 0
 #define TRUE 1
 #define FALSE 0
-#define MAXSIZE 1000
+#define MAXSIZE 10000
 typedef int Status;
 typedef int KeyType;
 typedef struct 
@@ -50,10 +50,10 @@ int main()
 	clock_t timePast;
 	clock_t timeNow;
 	int i;
-	sl.length=1000;
+	sl.length=10000;
 	
 	
-	for(i=1;i<=1000;i++)
+	for(i=1;i<=10000;i++)
 		sl.r[i]=rand()%1000;
 	
 	printf("Ô­À´ÊÇ\n");

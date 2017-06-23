@@ -89,7 +89,7 @@ int main()
 	
 	
 	for(i=1;i<=1000;i++)
-		sl.r[i]=rand()%1000;
+		sl.r[i]=rand()%1000+1;
 	
 	printf("Ô­À´ÊÇ\n");
 	TraverseList(sl);
