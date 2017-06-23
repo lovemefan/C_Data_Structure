@@ -17,12 +17,13 @@ ISBN ： 9787900643223
 ### E-mail:450489712@qq.com
 ****
 ## 目录
-* [线性表]()
-* [栈与队列]()
-* [递归]()
-* [串]()
-* [数组与广义表]()
-* [树与二叉树]()
-* [图]()
-* [查找]()
-* [排序]()
+* [线性表](https://github.com/lovemefan/C_Data_Structure/blob/master/线性表)
+* [栈与队列](https://github.com/lovemefan/C_Data_Structure/blob/master/栈与队列)
+* [递归](https://github.com/lovemefan/C_Data_Structure/blob/master/递归)
+* [串](https://github.com/lovemefan/C_Data_Structure/blob/master/串)
+* [数组与广义表](https://github.com/lovemefan/C_Data_Structure/blob/master/数组与广义表) 
+  * [稀疏矩阵](https://github.com/lovemefan/C_Data_Structure/blob/master/数组与广义表/稀疏矩阵) 
+* [树与二叉树](https://github.com/lovemefan/C_Data_Structure/blob/master/树与二叉树)
+* [图](https://github.com/lovemefan/C_Data_Structure/blob/master/图)
+* [查找](https://github.com/lovemefan/C_Data_Structure/blob/master/查找)
+* [排序](https://github.com/lovemefan/C_Data_Structure/blob/master/排序)
